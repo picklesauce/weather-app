@@ -3,7 +3,7 @@ import requests
 import os
 
 app = Flask(__name__)
-API_KEY = '2929177a1fd64a9c8d9101145251407'  
+API_KEY = os.getenv("WEATHER_API_KEY")  # Set this in your environment variables
 
 HTML = """
 <!DOCTYPE html>
@@ -21,14 +21,31 @@ HTML = """
         </form>
 
         {% if weather %}
-            <div class="card p-3 shadow-sm">
-                <h2>Weather in {{ weather['location']['name'] }}, {{ weather['location']['country'] }}:</h2>
+            <div class="card p-3 shadow-sm mb-4">
+                <h2>Now in {{ weather['location']['name'] }}, {{ weather['location']['country'] }}</h2>
                 <ul class="list-unstyled">
                     <li>🌡️ Temperature: {{ weather['current']['temp_c'] }}°C</li>
                     <li>🌥️ Condition: {{ weather['current']['condition']['text'] }}</li>
                     <li>💧 Humidity: {{ weather['current']['humidity'] }}%</li>
                     <li>🌬️ Wind: {{ weather['current']['wind_kph'] }} kph</li>
                 </ul>
+                <img src="{{ weather['current']['condition']['icon'] }}">
+            </div>
+
+            <h3>📅 3-Day Forecast</h3>
+            <div class="row">
+                {% for day in weather['forecast']['forecastday'] %}
+                    <div class="col-md-4">
+                        <div class="card p-3 shadow-sm mb-3">
+                            <h5>{{ day['date'] }}</h5>
+                            <img src="{{ day['day']['condition']['icon'] }}">
+                            <p>{{ day['day']['condition']['text'] }}</p>
+                            <p>🌡️ Max: {{ day['day']['maxtemp_c'] }}°C</p>
+                            <p>🌡️ Min: {{ day['day']['mintemp_c'] }}°C</p>
+                            <p>💧 Humidity: {{ day['day']['avghumidity'] }}%</p>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
         {% elif error %}
             <div class="alert alert-danger mt-3">❌ {{ error }}</div>
@@ -44,7 +61,7 @@ def index():
     error = None
     if request.method == "POST":
         city = request.form.get("city")
-        url = f"http://api.weatherapi.com/v1/current.json?key={API_KEY}&q={city}"
+        url = f"http://api.weatherapi.com/v1/forecast.json?key={API_KEY}&q={city}&days=3"
         response = requests.get(url)
         data = response.json()
 
