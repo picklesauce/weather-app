@@ -2,6 +2,10 @@
 
 A simple web app that displays the current weather and a 3-day forecast for any city using the [WeatherAPI](https://www.weatherapi.com/).
 
+## Live Demo
+
+[🌤️ View the live Weather‑App](https://weather-app-1-xet6.onrender.com/)
+
 ## 🚀 Features
 - Current weather (temperature, wind, humidity, condition)
 - 3-day forecast with weather icons
